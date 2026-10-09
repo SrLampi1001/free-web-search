@@ -1,26 +1,40 @@
-"""FastMCP server definition: lifespan, INSTRUCTIONS, /health, and a stub body
-for every tool/prompt/resource that Phase B / C / D / E fills in.
+"""FastMCP server definition: lifespan, INSTRUCTIONS, /health, and the six tool
+bodies that wire the orchestrator's facade to MCP.
 
 Per SPEC §2 / §10: the orchestrator is dual-era (FastMCP 4 default) and serves
 both Streamable HTTP and stdio depending on `FWS_TRANSPORT`. Application state
 (`settings`, `cache`, `rate_limiters`, `budget`, `http_client`, `providers`)
-is owned by the FastMCP `lifespan` context. Phase D adds the six tool bodies;
-Phase E replaces the prompt / resource stubs with SPEC §5 / §4 implementations.
+is owned by the FastMCP `lifespan` context. Phase D filled in the six tool
+bodies; Phase E replaces the prompt / resource stubs with SPEC §5 / §4.
 """
 from __future__ import annotations
 
 import logging
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
+from typing import Any
+from urllib.parse import urlsplit
 
 import httpx
 from fastmcp import Context, FastMCP
+from fastmcp.exceptions import ToolError
+from pydantic import Field
 from starlette.requests import Request
 from starlette.responses import JSONResponse, Response
 
 from .budget import Budget
 from .cache import DiskCache
-from .providers import ProviderContext, ProviderName, build_all
+from .providers import ProviderContext, ProviderName, build_all, facade
+from .providers.base import (
+    ProviderAuthError,
+    ProviderError,
+    ProviderName as _ProviderName,
+    ProviderQuotaError,
+    ProviderRateLimitError,
+    ProviderUnavailableError,
+)
+from .providers.chain import ChainExhaustedError
+from .providers.router import NoProviderError
 from .prompts import register_prompts
 from .rate_limit import MinIntervalLimiter
 from .resources import register_resources
