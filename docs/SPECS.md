@@ -421,7 +421,7 @@ A user-message prompt that returns a plan telling the model which tool to call. 
 
 ```
 You are about to research the topic '{topic}'.
-1. Call providers://budget. Read `providers.tavilly.calls_this_session` and `providers.firecrawl.remaining_credits`. If Firecrawl is below 50 credits, prefer the free `entity_search` and `pro_search` paths.
+1. Call providers://budget. Read `providers.tavily.calls_this_session` and `providers.firecrawl.remaining_credits`. If Firecrawl is below 50 credits, prefer the free `entity_search` and `pro_search` paths.
 2. Pick the tool: canonical entity name (person, place, product, standard) → `entity_search`; question-shaped / long-tail / general → `pro_search`; needs full page body or complex queries → `deep_search`.
 3. Call the chosen tool with a canonical topic name (NOT a question). Pass the recommended defaults (count=5 / max_results=5).
 4. If the result list is empty (`results: []` and `note` non-empty), rephrase once as a canonical topic name and call the same tool again.

@@ -437,6 +437,30 @@ class FirecrawlProvider:
         credits = _coerce_int(mapped.get("credits_used_this_call")) or 0
         self._ctx.budget.firecrawl_tracker.charge(credits)
 
+    async def credit_usage(self) -> dict[str, Any]:
+        """SPEC §8 startup probe: hit Firecrawl `/v2/team/credit-usage`.
+
+        Delegates to the inner client and converts typed errors to the
+        orchestrator's neutral exception taxonomy so the lifespan can record a
+        `probe_failed` note without crashing startup.
+        """
+        if self._client is None:
+            raise ProviderAuthError("FirecrawlProvider not configured: no client")
+        try:
+            return await self._client.credit_usage()
+        except FirecrawlAuthError as e:
+            raise ProviderAuthError(str(e)) from e
+        except FirecrawlCreditsError as e:
+            raise ProviderQuotaError(str(e)) from e
+        except FirecrawlRateLimitError as e:
+            raise ProviderRateLimitError(str(e)) from e
+        except httpx.HTTPError as e:
+            raise ProviderUnavailableError(
+                f"Firecrawl upstream transport error: {e.__class__.__name__}: {e}"
+            ) from e
+        except FirecrawlError as e:
+            raise ProviderError(str(e)) from e
+
     async def _call(self, coro: Awaitable[dict[str, Any]]) -> dict[str, Any]:
         """Run a Firecrawl call and map its errors to the orchestrator taxonomy."""
         try:
