@@ -8,8 +8,7 @@
 
 ## Models
 
-- **OpenCode — Fledge Alpha Free, Nemotron 3.5 Lighting Free.** Coding and bug-solving tasks. Documentation refinement.
-- **Minimax — MiniMax M3, MiniMax M2.7.** Coding, planning, and refinement tasks. Documentation refinement.
+- **Minimax — MiniMax M3** Coding, planning, and refinement tasks. Documentation refinement. — All tasks and sub agents used MiniMax M3. → Including sessions on the three MCP server that were combined to generate this one.
 - **Claude (web interface).** Planning and research tasks, refinement.
 
 ## Layout
@@ -21,17 +20,9 @@ coding-assistance/
 └── prompts.jsonl               # consolidated user prompts, one per line
 ```
 
-The `session-*.json` files are dropped into `docs/prompts/` by the operator after each session (or by an export pipeline). The script at `simple-cli-coder-with-rag/scripts/prompts_jsonl.py` reads them and emits one user-prompt record per line into `prompts.jsonl`.
+The `session-*.json` files are dropped into `docs/prompts/` by the operator after each session (or by an export pipeline). The script at `/scripts/prompts_jsonl.py` reads them and emits one user-prompt record per line into `prompts.jsonl`.
 
-## How to regenerate `prompts.jsonl`
-
-From the project root:
-
-```bash
-uv run python ../simple-cli-coder-with-rag/scripts/prompts_jsonl.py \
-    --source-dir docs/prompts \
-    --output    coding-assistance/prompts.jsonl
-```
+The file can't be regenerated since the session files aren't versioned and therefore, not available in the GitHub repository.
 
 Each output line is shaped:
 
