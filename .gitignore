@@ -26,6 +26,12 @@ htmlcov/
 # Cache directory for orchestrator responses (per SPEC §7)
 cache/
 
+# Session JSONL originals (input to coding-assistance/prompts.jsonl). Keep
+# the .jsonl output under git, exclude the raw session captures. Anything
+# `.json` that lands in docs/prompts/ is treated as a session capture and
+# never committed; non-JSON documentation in there is still tracked.
+docs/prompts/*.json
+
 # Editor / OS
 .vscode/
 .idea/
